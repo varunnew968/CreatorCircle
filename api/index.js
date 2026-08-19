@@ -123,6 +123,17 @@ app.get("/api/health", (req, res) => {
   });
 });
 
+app.get("/api/settings", (req, res) => {
+  res.json({
+    settings: {
+      channelName: "Everyday Stories",
+      channelHandle: "@EverydayStories",
+      channelUrl: "https://www.youtube.com/@everydaystories968",
+      channelAvatar: ""
+    }
+  });
+});
+
 app.get("/api/members/count", async (req, res, next) => {
   try {
     const count = await Member.countDocuments();
