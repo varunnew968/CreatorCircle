@@ -7,12 +7,40 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json({ limit: "1mb" }));
-app.use(express.static(path.join(__dirname, "public")));
 
+// MongoDB Connection Caching for Vercel
+let cachedDb = null;
+
+async function connectToDatabase() {
+  if (cachedDb) {
+    return cachedDb;
+  }
+  const mongoUri = process.env.MONGO_URI;
+  if (!mongoUri) {
+    throw new Error("MONGO_URI is missing.");
+  }
+  const db = await mongoose.connect(mongoUri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  });
+  cachedDb = db;
+  return db;
+}
+
+// Middleware to ensure database connection
+app.use(async (req, res, next) => {
+  try {
+    await connectToDatabase();
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Schemas
 const memberSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true, maxlength: 40 }
@@ -36,8 +64,9 @@ memberSchema.index({ createdAt: -1 });
 shareSchema.index({ createdAt: -1 });
 shareSchema.index({ memberId: 1, createdAt: -1 });
 
-const Member = mongoose.model("Member", memberSchema);
-const Share = mongoose.model("Share", shareSchema);
+// Avoid compiling models multiple times in serverless environments
+const Member = mongoose.models.Member || mongoose.model("Member", memberSchema);
+const Share = mongoose.models.Share || mongoose.model("Share", shareSchema);
 
 function detectYouTubeType(rawUrl) {
   try {
@@ -212,34 +241,10 @@ app.post("/api/shares", async (req, res, next) => {
   }
 });
 
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
-
+// Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).json({ message: "Something went wrong. Please try again." });
 });
 
-async function start() {
-  let mongoUri = process.env.MONGO_URI;
-  if (!mongoUri || mongoUri === "YOUR_NEW_MONGODB_ATLAS_URI") {
-  console.log("No MongoDB URI provided. Using in-memory database for fast start.");
-  const { MongoMemoryServer } = require("mongodb-memory-server");
-  const mongoServer = await MongoMemoryServer.create();
-  mongoUri = mongoServer.getUri();
-}
-
-try {
-  await mongoose.connect(mongoUri);
-  console.log("MongoDB connected");
-  app.listen(PORT, () => {
-    console.log(`Creator Circle running at http://localhost:${PORT}`);
-  });
-} catch (error) {
-  console.error("MongoDB connection failed:", error.message);
-  process.exit(1);
-}
-}
-
-start();
+module.exports = app;
