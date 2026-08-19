@@ -67,3 +67,10 @@ button{cursor:pointer}
 @keyframes sheetIn{from{transform:translateY(100%)}to{transform:none}}
 @media(min-width:520px){body{padding:20px 0}.app-shell{min-height:calc(100vh - 40px);border:1px solid var(--border);border-radius:30px;background:rgba(8,9,13,.86);box-shadow:0 30px 100px rgba(0,0,0,.45);overflow:hidden}.bottom-nav{bottom:30px}.toast{bottom:105px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+.delete-btn{background:transparent;border:0;color:var(--muted);font-size:14px;padding:4px;display:grid;place-items:center;transition:0.2s;opacity:0.7;}
+.delete-btn:hover{color:var(--danger);opacity:1;transform:scale(1.1);}
+.delete-btn:active{transform:scale(0.95);}
+.delete-sheet-actions{display:flex;gap:12px;margin-top:24px;}
+.delete-sheet-actions button{flex:1;}
+.danger-btn{background:var(--danger);color:white;border-color:var(--danger);box-shadow:0 14px 35px rgba(255,92,112,.24);}

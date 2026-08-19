@@ -188,7 +188,7 @@ app.get("/api/shares", async (req, res, next) => {
     res.json({
       shares: shares.map((share) => ({
         ...share,
-        member: share.memberId ? { name: share.memberId.name } : { name: "Community Member" }
+        member: share.memberId ? { name: share.memberId.name, _id: share.memberId._id } : { name: "Community Member" }
       }))
     });
   } catch (err) {
@@ -244,9 +244,34 @@ app.post("/api/shares", async (req, res, next) => {
     res.status(201).json({
       share: {
         ...share.toObject(),
-        member: { name: member.name }
+        member: { name: member.name, _id: member._id }
       }
     });
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.delete("/api/shares/:id", async (req, res, next) => {
+  try {
+    const shareId = req.params.id;
+    const { memberId } = req.body;
+
+    if (!mongoose.isValidObjectId(shareId) || !mongoose.isValidObjectId(memberId)) {
+      return res.status(400).json({ message: "Invalid request." });
+    }
+
+    const share = await Share.findById(shareId);
+    if (!share) {
+      return res.status(404).json({ message: "Share not found." });
+    }
+
+    if (share.memberId.toString() !== memberId) {
+      return res.status(403).json({ message: "You can only delete your own shares." });
+    }
+
+    await Share.findByIdAndDelete(shareId);
+    res.json({ message: "Share deleted successfully." });
   } catch (err) {
     next(err);
   }

@@ -170,19 +170,23 @@ async function loadFeed() {
 
     feed.innerHTML = shares.map(share => {
       const name = share.member?.name || "Community Member";
+      const isOwner = share.member?._id === state.memberId;
       const thumb = share.thumbnail || localThumbnail(share.url, share.type);
       const label = share.type === "short" ? "YouTube Short" : share.type === "channel" ? "YouTube Channel" : "YouTube Video";
       return `
-        <article class="share-card">
+        <article class="share-card" id="share-${share._id}">
           <div class="thumb-wrap">
             ${thumb ? `<img src="${escapeHtml(thumb)}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">` : ""}
             <div class="thumb-placeholder" style="${thumb ? "display:none" : ""}">YouTube</div>
             <span class="type-badge">${label}</span>
           </div>
           <div class="share-body">
-            <div class="share-meta">
-              <span class="person-dot">${escapeHtml(initials(name))}</span>
-              <span>${escapeHtml(name)} • ${timeAgo(share.createdAt)}</span>
+            <div class="share-meta" style="display:flex; justify-content:space-between; width:100%;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="person-dot">${escapeHtml(initials(name))}</span>
+                <span>${escapeHtml(name)} • ${timeAgo(share.createdAt)}</span>
+              </div>
+              ${isOwner ? `<button class="delete-btn" data-action="delete" data-id="${share._id}" title="Delete share">🗑</button>` : ""}
             </div>
             <div class="share-title">${escapeHtml(share.title || label)}</div>
             <div class="share-actions">
@@ -381,6 +385,49 @@ $("#feed").addEventListener("click", async event => {
     } catch {
       toast("Copy failed. Please copy the link manually.");
     }
+  }
+
+  if (action === "delete") {
+    openDeleteSheet(button.dataset.id);
+  }
+});
+
+let shareToDelete = null;
+
+function openDeleteSheet(id) {
+  shareToDelete = id;
+  $("#deleteSheet").classList.remove("hidden");
+}
+
+function closeDeleteSheet() {
+  shareToDelete = null;
+  $("#deleteSheet").classList.add("hidden");
+}
+
+$("#cancelDeleteBtn").addEventListener("click", closeDeleteSheet);
+$("#deleteSheet").addEventListener("click", e => {
+  if (e.target === $("#deleteSheet")) closeDeleteSheet();
+});
+
+$("#confirmDeleteBtn").addEventListener("click", async () => {
+  if (!shareToDelete || !state.memberId) return;
+  const btn = $("#confirmDeleteBtn");
+  
+  try {
+    setBusy(btn, true, "Deleting…");
+    await api(`/shares/${shareToDelete}`, {
+      method: "DELETE",
+      body: JSON.stringify({ memberId: state.memberId })
+    });
+    
+    closeDeleteSheet();
+    toast("Share deleted ✓");
+    const el = $(`#share-${shareToDelete}`);
+    if (el) el.remove();
+  } catch (err) {
+    toast(err.message);
+  } finally {
+    setBusy(btn, false);
   }
 });
 
