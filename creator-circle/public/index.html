@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#08090D" />
+  <meta name="description" content="Creator Circle — Subscribe, share, watch." />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <title>Creator Circle</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
+  <main class="app-shell">
+    <section id="welcomeView" class="view">
+      <div class="brand">
+        <div class="brand-mark">CC</div>
+        <span>Creator Circle</span>
+      </div>
+
+      <div class="hero">
+        <div class="live-pill"><span></span> Live community</div>
+        <h1>Subscribe.<br /><em>Share.</em> Watch.</h1>
+        <p>One simple place to discover what everyone in the community is creating.</p>
+
+        <div class="member-hero-card">
+          <div>
+            <strong id="welcomeCount">—</strong>
+            <span>Community Members</span>
+          </div>
+          <div class="pulse-dot"></div>
+        </div>
+
+        <button class="primary-btn" id="joinBtn">
+          Join Community
+          <span>→</span>
+        </button>
+
+        <small class="micro-copy">Free community • Simple sharing</small>
+      </div>
+    </section>
+
+    <section id="subscribeView" class="view hidden">
+      <button class="back-btn" id="backToWelcome">←</button>
+      <div class="step-label">STEP 1 OF 2</div>
+      <h2>One small step</h2>
+      <p class="section-copy">Subscribe to our YouTube channel before entering the community.</p>
+
+      <div class="channel-card">
+        <div class="channel-avatar" id="channelAvatar">ES</div>
+        <div class="channel-info">
+          <strong id="channelName">Everyday Stories</strong>
+          <span id="channelHandle">@EverydayStories</span>
+          <small>Official community channel</small>
+        </div>
+        <div class="youtube-mini">▶</div>
+      </div>
+
+      <button class="youtube-btn" id="youtubeBtn">
+        <span class="youtube-icon">▶</span>
+        Subscribe on YouTube
+      </button>
+
+      <div class="divider"><span>then</span></div>
+
+      <button class="secondary-btn" id="subscribedBtn">I've Subscribed</button>
+      <p class="demo-note">For this version, subscription confirmation is a simple step. Real YouTube verification can be added later.</p>
+    </section>
+
+    <section id="joinView" class="view hidden">
+      <button class="back-btn" id="backToSubscribe">←</button>
+      <div class="step-label">STEP 2 OF 2</div>
+      <h2>Let's get you in</h2>
+      <p class="section-copy">Just your name. Nothing complicated.</p>
+
+      <form id="joinForm" class="form-card">
+        <label for="nameInput">Your name</label>
+        <input id="nameInput" maxlength="40" autocomplete="name" placeholder="Enter your name" />
+        <button class="primary-btn" type="submit" id="joinSubmitBtn">
+          Join Community
+          <span>→</span>
+        </button>
+      </form>
+    </section>
+
+    <section id="successView" class="view hidden centered-view">
+      <div class="success-icon">✓</div>
+      <div class="step-label">WELCOME</div>
+      <h2>You're in! 🎉</h2>
+      <p class="section-copy">Welcome to Creator Circle.</p>
+      <div class="member-number-card">
+        <span>You are member</span>
+        <strong id="memberNumber">#—</strong>
+      </div>
+      <button class="primary-btn" id="enterCommunityBtn">Enter Community <span>→</span></button>
+    </section>
+
+    <section id="communityView" class="view hidden">
+      <header class="topbar">
+        <div>
+          <div class="mini-brand">Creator Circle</div>
+          <h3 id="welcomeName">Welcome back 👋</h3>
+        </div>
+        <button class="icon-btn" id="refreshBtn" aria-label="Refresh">↻</button>
+      </header>
+
+      <div class="community-card">
+        <div class="community-card-top">
+          <div>
+            <span class="eyebrow">COMMUNITY MEMBERS</span>
+            <strong id="communityCount">—</strong>
+            <span class="community-live"><i></i> Live community</span>
+          </div>
+          <div class="avatar-stack" id="avatarStack"></div>
+        </div>
+        <p>Everyone here is sharing something worth watching.</p>
+      </div>
+
+      <button class="share-cta" id="openShareBtn">
+        <span class="plus">+</span>
+        <span>
+          <strong>Share your link</strong>
+          <small>Show the community what you're creating</small>
+        </span>
+        <span class="arrow">→</span>
+      </button>
+
+      <div class="feed-heading">
+        <div>
+          <span class="eyebrow">COMMUNITY FEED</span>
+          <h3>Latest Shares</h3>
+        </div>
+        <button class="text-btn" id="refreshFeedBtn">Refresh</button>
+      </div>
+
+      <div id="feed" class="feed"></div>
+
+      <nav class="bottom-nav">
+        <button class="nav-item active"><span>⌂</span><small>Home</small></button>
+        <button class="nav-item" id="navShare"><span>＋</span><small>Share</small></button>
+      </nav>
+    </section>
+  </main>
+
+  <div id="shareSheet" class="sheet-overlay hidden">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-header">
+        <div>
+          <span class="eyebrow">COMMUNITY SHARE</span>
+          <h3>Share your link</h3>
+        </div>
+        <button class="close-btn" id="closeShareBtn">×</button>
+      </div>
+      <p class="section-copy">Paste a YouTube video, Short, or channel.</p>
+
+      <label class="url-label" for="urlInput">YouTube link</label>
+      <div class="url-wrap">
+        <span>↗</span>
+        <input id="urlInput" type="url" placeholder="Paste YouTube link..." />
+      </div>
+
+      <div id="preview" class="preview hidden"></div>
+      <p id="shareHint" class="share-hint">You can share up to 5 links per day.</p>
+
+      <button class="primary-btn" id="postShareBtn">
+        Share With Community
+        <span>→</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
